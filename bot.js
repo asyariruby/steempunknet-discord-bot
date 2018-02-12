@@ -58,8 +58,20 @@ bot.on('message', function (message) {
     }
 });
 
+
 // welcome messages for new users
 require('./commands/welcome.js')(bot);
+
+
+// check new fighters
+const fighterCheckIntervall = 1000 * 60 * 10;  // every 10 minutes
+
+let checkNewFighters = function () {
+    require('./crons/newFighters.js').run();
+    setTimeout(checkNewFighters, fighterCheckIntervall);
+};
+
+checkNewFighters();
 
 
 // bot login to the server
