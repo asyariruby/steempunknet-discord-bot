@@ -1,7 +1,8 @@
 STEEMPUNK-NET Discord Bot
 ======
 
-This Repository shows our Bot which we use in our Discord Channel
+This Repository shows our Bot which we use in our Discord Channel.
+(https://discord.gg/p2bUGCn)  
 The bot helps the players of STEEMPUNK-NET in Discord.
 
 About this Repo
