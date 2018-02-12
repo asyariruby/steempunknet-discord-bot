@@ -58,4 +58,9 @@ bot.on('message', function (message) {
     }
 });
 
+// welcome messages for new users
+require('./commands/welcome.js')(bot);
+
+
+// bot login to the server
 bot.login(auth.token);
