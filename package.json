@@ -1,0 +1,11 @@
+{
+  "name": "STEEMPUNK-NET-Discord-Bot",
+  "version": "1.0.0",
+  "description": "STEEMPUNK-NET Bot Discord bot",
+  "main": "bot.js",
+  "author": "@dehenne",
+  "dependencies": {
+    "discord.js": "^11.3.0",
+    "winston": "^2.4.0"
+  }
+}
