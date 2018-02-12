@@ -5,6 +5,7 @@ This Repository shows our Bot which we use in our Discord Channel.
 (https://discord.gg/p2bUGCn)  
 The bot helps the players of STEEMPUNK-NET in Discord.
 
+
 About this Repo
 ------
 
@@ -27,3 +28,21 @@ Where can I find more information about SPN?
 - [Website](https://www.steempunk.net/)
 - [FAQ](https://www.steempunk.net/FAQ)
 - [Wiki FAQ](https://github.com/pcsg/steempunknet/wiki/faq-v1)
+
+
+Bot Usage
+------
+
+### Installation
+
+- Create a `auth.json` file
+- Insert your bot token from Discord
+
+```json
+{
+  "token": "YOUR-TOKEN"
+}
+```
+
+- Execute `npm install`
+- Run the bot `nodejs bot.js`
