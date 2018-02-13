@@ -74,5 +74,16 @@ let checkNewFighters = function () {
 checkNewFighters();
 
 
+// check daily bulletin
+const dailyBulletinCheckInterval = 1000 * 60 * 30;  // every 30 minutes
+
+let checkDailyBulletin = function () {
+    require('./crons/dailyBulletin.js').run();
+    setTimeout(checkNewFighters, dailyBulletinCheckInterval);
+};
+
+checkDailyBulletin();
+
+
 // bot login to the server
 bot.login(auth.token);

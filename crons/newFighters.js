@@ -7,7 +7,7 @@ const run = function () {
     const logger  = require('winston');
     const auth    = require('../auth.json');
 
-    logger.info('Check for new fighters...');
+    logger.info('Check for new fighters');
 
     const userFile = __dirname + '/../var/users.js';
 
@@ -60,7 +60,7 @@ const run = function () {
 
         bot.on('ready', function (evt) {
             logger.info('Connected');
-            logger.info('Logged in as: ');
+            logger.info('Logged in for new fighters');
             logger.info(bot.user.username + ' - (' + bot.user.id + ')');
 
             const channel = bot.channels.find("name", 'battle-news');
@@ -74,7 +74,6 @@ const run = function () {
 
                 Promise.all(promises).then(function () {
                     bot.destroy();
-                    process.exit();
                 });
 
                 return;

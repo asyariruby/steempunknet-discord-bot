@@ -1,6 +1,6 @@
 const run = function () {
+    "use strict";
 
-// https://www.steempunk.net/api/spn/v1/fighters
     const fs      = require('fs');
     const Discord = require('discord.js');
     const logger  = require('winston');
@@ -13,16 +13,17 @@ const run = function () {
 
     logger.info('Check for SPN Bulletin Posts');
 
-    let fileBulletin = __dirname + '/../var/dailyBulletin.js';
-    let alreadySent  = fs.readFileSync(fileBulletin, 'utf8');
-
-// send message to discord
+    /**
+     * Send messages to discord
+     *
+     * @param {array} messages - list of messages
+     */
     function sendMessages(messages) {
         const bot = new Discord.Client();
 
         bot.on('ready', function (evt) {
             logger.info('Connected');
-            logger.info('Logged in as: ');
+            logger.info('Logged in Bulletin');
             logger.info(bot.user.username + ' - (' + bot.user.id + ')');
 
             const channel = bot.channels.find("name", 'battle-news');
@@ -36,7 +37,6 @@ const run = function () {
 
                 Promise.all(promises).then(function () {
                     bot.destroy();
-                    process.exit();
                 });
 
                 return;
@@ -49,6 +49,13 @@ const run = function () {
         bot.login(auth.token);
     }
 
+    /**
+     * get the newest posts from steempunksnet
+     *
+     * @type {string}
+     */
+    let bulletinFile = __dirname + '/../var/dailyBulletin.js';
+    let alreadySent  = fs.readFileSync(bulletinFile, 'utf8').split("\n");
 
     steem.api.getDiscussionsByBlog({
         tag  : 'steempunksnet',
@@ -58,15 +65,30 @@ const run = function () {
             return;
         }
 
-        for (let i = 0, len = result.length; i < len; i++) {
-            console.log(result[i].permlink);
+        let i, len, permlink;
+        let missing = [];
+
+        for (i = 0, len = result.length; i < len; i++) {
+            permlink = result[i].permlink;
+
+            if (alreadySent.indexOf(permlink) !== -1) {
+                continue;
+            }
+
+            alreadySent.push(permlink);
+
+            missing.push(
+                "https://steemit.com/" + result[i].category + '/@' + result[i].author + '/' + permlink
+            );
         }
+
+        // send link to the discord
+        if (missing.length) {
+            sendMessages(missing);
+        }
+
+        fs.writeFileSync(bulletinFile, alreadySent.join("\n"));
     });
 };
 
-run();
-
-setTimeout(function () {
-
-}, 10000);
-//module.exports.run = run;
+module.exports.run = run;
