@@ -32,6 +32,11 @@ bot.on('message', function (message) {
         return;
     }
 
+    if (message.content.indexOf('!show') !== -1) {
+        require('./commands/show.js')(message);
+        return;
+    }
+
     // Our bot needs to know if it will execute a command
     // It will listen for messages that will start with `!`
     if (message.content.substring(0, 1) !== '!') {
