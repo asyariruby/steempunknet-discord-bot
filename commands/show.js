@@ -33,7 +33,26 @@ function makeApiCall(path) {
  * show the top players
  */
 function showTop(message) {
+    makeApiCall('/api/spn/v1/search/fighters/top').then(function (result) {
+        let i, len, username, level, xp;
+        let text = "";
 
+        text = text + "Top fighters\n";
+        text = text + "=====================\n\n";
+
+        for (i = 0, len = result.length; i < len; i++) {
+            username = result[i].username;
+            level    = result[i].level;
+            xp       = result[i].experience;
+
+            text = text + '- ' + username + ' - <https://steemit.com/@' + username + '>';
+            text = text + ' - Level: ' + level;
+            text = text + ' - Experience: ' + xp;
+            text = text + "\n";
+        }
+
+        message.channel.send(text);
+    });
 }
 
 /**
@@ -44,7 +63,20 @@ function showLevel(message) {
 }
 
 function showNewest(message) {
+    makeApiCall('/api/spn/v1/search/fighters/newest').then(function (result) {
+        let i, len, username;
+        let text = "";
 
+        text = text + "Newest fighters\n";
+        text = text + "=====================\n\n";
+
+        for (i = 0, len = result.length; i < len; i++) {
+            username = result[i].username;
+            text     = text + '- ' + username + ' - <https://steemit.com/@' + username + ">\n";
+        }
+
+        message.channel.send(text);
+    });
 }
 
 /**
@@ -69,7 +101,7 @@ module.exports = function (message) {
         showLevel(message);
     }
 
-    if (message.content.indexOf('!show level') !== -1) {
+    if (message.content.indexOf('!show newest') !== -1) {
         showNewest(message);
     }
 
