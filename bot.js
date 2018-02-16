@@ -65,7 +65,8 @@ bot.on('message', function (message) {
 
 
 // welcome messages for new users
-require('./commands/welcome.js')(bot);
+require('./watcher/welcome.js')(bot);
+require('./watcher/postpromotion.js')(bot);
 
 
 // check new fighters
