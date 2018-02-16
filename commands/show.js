@@ -1,4 +1,5 @@
-const http = require('https');
+const http  = require('https');
+const Table = require('table-layout');
 
 /**
  * Execute a call to the SPN API
@@ -30,26 +31,77 @@ function makeApiCall(path) {
 }
 
 /**
+ * Parse a fighter list to a table
+ *
+ * @param {array} result
+ * @param {int} limit
+ * @return {string}
+ */
+function parseFightersToTable(result, limit) {
+    let fighters = [{
+        'username': 'Name',
+        'link'    : 'Link'
+    }, {
+        'username': '',
+        'link'    : ''
+    }];
+
+    if (typeof limit === 'undefined') {
+        limit = result.length;
+    }
+
+    for (let i = 0; i < limit; i++) {
+        fighters.push({
+            username: result[i].username.trim(),
+            link    : 'https://steemit.com/@' + result[i].username.trim(),
+        });
+    }
+
+    let CliTable = new Table(fighters, {
+        maxWidth: 200
+    });
+
+    return '```' + CliTable.toString() + '```';
+}
+
+
+/**
  * show the top players
  */
 function showTop(message) {
     makeApiCall('/api/spn/v1/search/fighters/top').then(function (result) {
-        let i, len, username, level, xp;
+        let i, len;
         let text = "";
 
         text = text + "Top fighters\n";
-        text = text + "=====================\n\n";
+        text = text + "\n";
 
-        for (i = 0, len = result.length; i < len; i++) {
-            username = result[i].username;
-            level    = result[i].level;
-            xp       = result[i].experience;
+        let fighters = [{
+            'username': 'Name',
+            'link'    : 'Link',
+            'level'   : 'Level',
+            'exp'     : 'Experience'
+        }, {
+            'username': '',
+            'link'    : '',
+            'level'   : '',
+            'exp'     : ''
+        }];
 
-            text = text + '- ' + username + ' - <https://steemit.com/@' + username + '>';
-            text = text + ' - Level: ' + level;
-            text = text + ' - Experience: ' + xp;
-            text = text + "\n";
+        for (i = 0, len = 10; i < len; i++) {
+            fighters.push({
+                username: result[i].username.trim(),
+                link    : 'https://steemit.com/@' + result[i].username.trim(),
+                level   : parseInt(result[i].level),
+                exp     : parseInt(result[i].experience)
+            });
         }
+
+        let CliTable = new Table(fighters, {
+            maxWidth: 200
+        });
+
+        text = text + '```' + CliTable.toString() + '```';
 
         message.channel.send(text);
     });
@@ -59,21 +111,46 @@ function showTop(message) {
  * show the top players
  */
 function showLevel(message) {
+    // find the wanted level
+    let str   = message.content;
+    let start = str.indexOf('!show level') + ("!show level").length;
+    let end   = str.indexOf(' ', start);
 
+    // no space found
+    if (end === -1) {
+        end = str.length;
+    }
+
+    let length = end - start;
+    let level  = parseInt(str.substr(start, length));
+
+    if (!level) {
+        level = 10;
+    }
+
+    makeApiCall('/api/spn/v1/search/fighters/level/' + level).then(function (result) {
+        let text = "";
+
+        text = text + "Level " + level + " Fighters\n";
+        text = text + "\n";
+        text = text + parseFightersToTable(result);
+
+        message.channel.send(text);
+    });
 }
 
+/**
+ * Show the newest fighters
+ *
+ * @param message
+ */
 function showNewest(message) {
     makeApiCall('/api/spn/v1/search/fighters/newest').then(function (result) {
-        let i, len, username;
         let text = "";
 
         text = text + "Newest fighters\n";
-        text = text + "=====================\n\n";
-
-        for (i = 0, len = result.length; i < len; i++) {
-            username = result[i].username;
-            text     = text + '- ' + username + ' - <https://steemit.com/@' + username + ">\n";
-        }
+        text = text + "\n";
+        text = text + parseFightersToTable(result);
 
         message.channel.send(text);
     });
@@ -92,6 +169,7 @@ function showRandomPlayer(message) {
     });
 }
 
+// module export
 module.exports = function (message) {
     if (message.content.indexOf('!show top') !== -1) {
         showTop(message);
@@ -108,5 +186,4 @@ module.exports = function (message) {
     if (message.content.indexOf('!show random') !== -1) {
         showRandomPlayer(message);
     }
-    //message.channel.send();
 };
